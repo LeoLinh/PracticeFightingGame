@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletForce = 5f;
-    Vector2 shootDirection;
+    Vector2 shootDirection = Vector2.right;
     public float delayBeforeShooting = 1f;
 
     private int facingDir = 1; // flip
@@ -235,6 +235,8 @@ public class PlayerController : MonoBehaviour
         bullet.transform.localScale = new Vector3(shootDirection.x, 1, 1);
 
     }
+
+   
 
     private void UpdateShootDirection()
     {
