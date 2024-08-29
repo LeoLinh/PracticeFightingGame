@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     private int facingDir = 1; // flip
     private bool facingRight = true; // flip
 
+    private bool isAttacking;
+
     [Header("Dash")]
     public float dashSpeed;
     public float dashDuration;
@@ -42,6 +44,11 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    public void AttackOver()
+    {
+        isAttacking = false;
+    }
+
     private void GroundCheck()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, WhatIsGround);
@@ -54,11 +61,17 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isGrounded", isGrounded); // check ground for once jump
         anim.SetFloat("yVelocity", rb.velocity.y);
         anim.SetBool("isDashing", dashTimer > 0);
+        anim.SetBool("isAttacking", isAttacking);
     }
 
     private void CheckInput()
     {
         xInput = Input.GetAxisRaw("Horizontal"); // di chuyển thường
+
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            isAttacking = true;
+        }
 
         if (Input.GetButtonDown("Jump")) // Input nhảy
         {
