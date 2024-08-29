@@ -4,18 +4,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private GameObject fireBallsPrefabs;
     public float moveSpeed;
     private Rigidbody2D rb;
     private float xInput;
     public float jumpForce;
     private Animator anim;
-
-    [Header("Fire Ball")]
-    public GameObject bulletPrefab;
-    public Transform firePoint;
-    public float bulletForce = 5f;
-    Vector2 shootDirection = Vector2.right;
-    public float delayBeforeShooting = 1f;
 
     private int facingDir = 1; // flip
     private bool facingRight = true; // flip
@@ -28,6 +23,10 @@ public class PlayerController : MonoBehaviour
     private bool isDizzy;
     private bool isHurt;
     private bool isWin;
+    private bool canMove = true;
+    private float castCooldownTimer;
+    private float castCooldown;
+    private bool isDashing;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -122,43 +121,43 @@ public class PlayerController : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal"); // di chuyển thường
 
-        if(Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             isWin = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.H))
         {
             isHurt = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M))
         {
             isDizzy = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(KeyCode.N))
         {
             isDie = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B))
         {
             isCasting = true;
-            StartCoroutine(DelayedShooting());
+            Cast();
         }
 
-        if(Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V))
         {
             isBlocking = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             isCrouching = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             isAttacking = true;
         }
@@ -172,8 +171,10 @@ public class PlayerController : MonoBehaviour
         dashTimer -= Time.deltaTime; // dash
         if (Input.GetKeyDown(KeyCode.LeftShift)) // check input dash
         {
+            isDashing = true;
             dashTimer = dashDuration;
         }
+        isDashing = false;
     }
 
     private void Movement()
@@ -220,34 +221,36 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - groundCheckDistance));
     }
-
-    private IEnumerator DelayedShooting()
+    private void Cast()
     {
-        yield return new WaitForSeconds(delayBeforeShooting);
-        Shooting();
-    }
-
-    public void Shooting()
-    {
-        UpdateShootDirection();
-        var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        bullet.GetComponent<Rigidbody2D>().velocity = shootDirection.normalized * bulletForce;
-        bullet.transform.localScale = new Vector3(shootDirection.x, 1, 1);
-
-    }
-
-   
-
-    private void UpdateShootDirection()
-    {
-        if (transform.localScale.x > 0)
+        if (castCooldownTimer >= castCooldown && isGrounded && !isDizzy && !isDashing && canMove && !anim.GetCurrentAnimatorStateInfo(0).IsName("Cast"))
         {
-            shootDirection = Vector2.right;
-        }
-        else
-        {
-            shootDirection = Vector2.left;
+            castCooldownTimer = 0;
+            //anim.SetTrigger("Cast");
+            anim.SetBool("isCasting", true);
+            canMove = false;
+            if (fireBallsPrefabs != null)
+            {
+                GameObject fireBalls = Instantiate(fireBallsPrefabs, firePoint.position, Quaternion.identity);
+                Projectile projecttileScript = fireBalls.GetComponent<Projectile>();
+                if (projecttileScript != null)
+                {
+                    projecttileScript.SetDirection(transform.localScale.x);
+                }
+            }
+            StartCoroutine(ResetAction("isCasting"));
+
         }
     }
+    private IEnumerator ResetAction(string actionBoolName)
+    {
+        // Xử lý reset trạng thái hành động (Casting, Attacking)
+        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(stateInfo.length);
+        anim.SetBool(actionBoolName, false);
+        canMove = true;
+    }
+
+
 
 }

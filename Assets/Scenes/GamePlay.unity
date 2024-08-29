@@ -974,12 +974,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14373aebeb59ab24a83a8af173813ec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firePoint: {fileID: 1018786663}
+  fireBallsPrefabs: {fileID: 6831882833786485806, guid: 1a1c8d423bd9a4442b4e13034dda477c, type: 3}
   moveSpeed: 5
   jumpForce: 15
-  bulletPrefab: {fileID: 6831882833786485806, guid: 1a1c8d423bd9a4442b4e13034dda477c, type: 3}
-  firePoint: {fileID: 1018786663}
-  bulletForce: 15
-  delayBeforeShooting: 0.3
   dashSpeed: 15
   dashDuration: 0.4
   dashTimer: 0
@@ -1075,7 +1073,7 @@ GameObject:
   - component: {fileID: 2062580528}
   - component: {fileID: 2062580527}
   - component: {fileID: 2062580526}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

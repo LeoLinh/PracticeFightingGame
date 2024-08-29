@@ -193,7 +193,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adffcb2cf174787448e4a0c4783a4b8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 6831882833786485806}
-  animator: {fileID: 6643501546655538583}
-  life: 5
-  destroyDelay: 0.5
+  speed: 7

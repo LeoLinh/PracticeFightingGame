@@ -1,28 +1,64 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Projectile : MonoBehaviour
 {
-    public GameObject bullet;
-    public Animator animator;
-    private Rigidbody2D rb;
-    public float life = 5f;
-    public float destroyDelay = 2f;
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private float speed;
+    private float direction;
+    private bool hit;
+    private BoxCollider2D boxCollider;
+    private Animator anim;
+    private float lifetime = 5f;
+
+    private void Awake()
     {
-        animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-        Destroy(bullet, life);
+        boxCollider = GetComponent<BoxCollider2D>();
+        anim = GetComponent<Animator>();
     }
-
-
+    private void Update()
+    {
+        if (hit) return;
+        float movementspeed = Time.deltaTime * speed * direction;
+        transform.Translate(movementspeed, 0, 0);
+        lifetime += Time.deltaTime;
+        if (lifetime > 5) gameObject.SetActive(false);
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        animator.SetTrigger("explode");
-        Destroy(bullet, destroyDelay);
+        if (hit) return;
+        hit = true;
+        boxCollider.enabled = false;
+        anim.SetTrigger("explode");
+        StopCoroutine(LifetimeCroutine());
+        StopCoroutine(WaitForExplosion());
+    }
+
+    private IEnumerator LifetimeCroutine()
+    {
+        yield return new WaitForSeconds(lifetime);
+        Deactivate();
+    }
+
+    private IEnumerator WaitForExplosion()
+    {
+        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(stateInfo.length);
+        Deactivate();
+    }
+    public void SetDirection(float _direction)
+    {
+        lifetime = 0;
+        direction = _direction;
+        gameObject.SetActive(true);
+        hit = false;
+        boxCollider.enabled = true;
+        float localScaleX = transform.localScale.x;
+        if (Mathf.Sign(localScaleX) != _direction)
+            localScaleX = -localScaleX;
+        transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
+    }
+    private void Deactivate()
+    {
+        Destroy(gameObject);
     }
 }
