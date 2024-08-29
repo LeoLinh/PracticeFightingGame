@@ -15,6 +15,12 @@ public class PlayerAnimEvent : MonoBehaviour
     {
         player.AttackOver();
         player.CrouchOver();
+        player.BlockOver();
+        player.CastOver();
+        player.DieOver();
+        player.DizzyOver();
+        player.HurtOver();
+        player.WinOver();
     }
 
 }

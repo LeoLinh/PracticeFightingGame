@@ -15,6 +15,12 @@ public class PlayerController : MonoBehaviour
 
     private bool isAttacking;
     private bool isCrouching;
+    private bool isBlocking;
+    private bool isCasting;
+    private bool isDie;
+    private bool isDizzy;
+    private bool isHurt;
+    private bool isWin;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -43,6 +49,36 @@ public class PlayerController : MonoBehaviour
         GroundCheck();
     }
 
+    public void WinOver()
+    {
+        isWin = false;
+    }
+
+    public void HurtOver()
+    {
+        isHurt = false;
+    }
+
+    public void DizzyOver()
+    {
+        isDizzy = false;
+    }
+
+    public void DieOver()
+    {
+        isDie = false;
+    }
+
+    public void CastOver()
+    {
+        isCasting = false;
+    }
+
+    public void BlockOver()
+    {
+        isBlocking = false;
+    }
+
     public void CrouchOver()
     {
         isCrouching = false;
@@ -67,11 +103,47 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isDashing", dashTimer > 0);
         anim.SetBool("isAttacking", isAttacking);
         anim.SetBool("isCrouching", isCrouching);
+        anim.SetBool("isBlocking", isBlocking);
+        anim.SetBool("isCasting", isCasting);
+        anim.SetBool("isDie", isDie);
+        anim.SetBool("isDizzy", isDizzy);
+        anim.SetBool("isHurt", isHurt);
+        anim.SetBool("isWin", isWin);
     }
 
     private void CheckInput()
     {
         xInput = Input.GetAxisRaw("Horizontal"); // di chuyển thường
+
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            isWin = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            isHurt = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.M))
+        {
+            isDizzy = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.N))
+        {
+            isDie = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.B))
+        {
+            isCasting = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            isBlocking = true;
+        }
 
         if(Input.GetKeyDown(KeyCode.C))
         {
