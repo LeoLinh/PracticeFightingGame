@@ -10,6 +10,13 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     private Animator anim;
 
+    [Header("Fire Ball")]
+    public GameObject bulletPrefab;
+    public Transform firePoint;
+    public float bulletForce = 5f;
+    Vector2 shootDirection;
+    public float delayBeforeShooting = 1f;
+
     private int facingDir = 1; // flip
     private bool facingRight = true; // flip
 
@@ -138,6 +145,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.B))
         {
             isCasting = true;
+            StartCoroutine(DelayedShooting());
         }
 
         if(Input.GetKeyDown(KeyCode.V))
@@ -212,4 +220,32 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - groundCheckDistance));
     }
+
+    private IEnumerator DelayedShooting()
+    {
+        yield return new WaitForSeconds(delayBeforeShooting);
+        Shooting();
+    }
+
+    public void Shooting()
+    {
+        UpdateShootDirection();
+        var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        bullet.GetComponent<Rigidbody2D>().velocity = shootDirection.normalized * bulletForce;
+        bullet.transform.localScale = new Vector3(shootDirection.x, 1, 1);
+
+    }
+
+    private void UpdateShootDirection()
+    {
+        if (transform.localScale.x > 0)
+        {
+            shootDirection = Vector2.right;
+        }
+        else
+        {
+            shootDirection = Vector2.left;
+        }
+    }
+
 }
