@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private bool facingRight = true; // flip
 
     private bool isAttacking;
+    private bool isCrouching;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -40,8 +41,11 @@ public class PlayerController : MonoBehaviour
         Animation();
         FlipController();
         GroundCheck();
+    }
 
-        
+    public void CrouchOver()
+    {
+        isCrouching = false;
     }
 
     public void AttackOver()
@@ -62,11 +66,17 @@ public class PlayerController : MonoBehaviour
         anim.SetFloat("yVelocity", rb.velocity.y);
         anim.SetBool("isDashing", dashTimer > 0);
         anim.SetBool("isAttacking", isAttacking);
+        anim.SetBool("isCrouching", isCrouching);
     }
 
     private void CheckInput()
     {
         xInput = Input.GetAxisRaw("Horizontal"); // di chuyển thường
+
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            isCrouching = true;
+        }
 
         if(Input.GetKeyDown(KeyCode.Mouse0))
         {
