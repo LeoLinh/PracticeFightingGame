@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -15,50 +15,53 @@ public class Projectile : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
     }
+
     private void Update()
     {
         if (hit) return;
-        float movementspeed = Time.deltaTime * speed * direction;
-        transform.Translate(movementspeed, 0, 0);
-        lifetime += Time.deltaTime;
-        if (lifetime > 5) gameObject.SetActive(false);
+
+        // Di chuyển viên đạn dựa vào hướng và tốc độ
+        float movementSpeed = Time.deltaTime * speed * direction;
+        transform.Translate(movementSpeed, 0, 0);
+
+        // Kiểm tra thời gian tồn tại của viên đạn
+        lifetime -= Time.deltaTime;
+        if (lifetime <= 0) Deactivate();
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (hit) return;
+
         hit = true;
         boxCollider.enabled = false;
         anim.SetTrigger("explode");
-        StopCoroutine(LifetimeCroutine());
-        StopCoroutine(WaitForExplosion());
+
+        // Dừng tất cả các coroutine đang chạy
+        StopAllCoroutines();
     }
 
-    private IEnumerator LifetimeCroutine()
+    private void Deactivate()
     {
-        yield return new WaitForSeconds(lifetime);
-        Deactivate();
+        Destroy(gameObject);
     }
 
-    private IEnumerator WaitForExplosion()
-    {
-        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(stateInfo.length);
-        Deactivate();
-    }
     public void SetDirection(float _direction)
     {
-        lifetime = 0;
         direction = _direction;
         gameObject.SetActive(true);
         hit = false;
         boxCollider.enabled = true;
-        float localScaleX = transform.localScale.x;
-        if (Mathf.Sign(localScaleX) != _direction)
-            localScaleX = -localScaleX;
-        transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
-    }
-    private void Deactivate()
-    {
-        Destroy(gameObject);
+
+        // Thay đổi chiều rộng của hình ảnh theo hướng
+        Vector3 localScale = transform.localScale;
+        if (Mathf.Sign(localScale.x) != Mathf.Sign(_direction))
+        {
+            localScale.x = -localScale.x;
+        }
+        transform.localScale = localScale;
+
+        // Đặt lại thời gian tồn tại của viên đạn
+        lifetime = 5f;
     }
 }
