@@ -947,6 +947,8 @@ MonoBehaviour:
   fireBallsPrefabs: {fileID: 6831882833786485806, guid: 1a1c8d423bd9a4442b4e13034dda477c, type: 3}
   moveSpeed: 5
   jumpForce: 15
+  strikeSpeed: 15
+  strikeDuration: 0.4
   dashSpeed: 15
   dashDuration: 0.4
   groundCheckDistance: 1.55

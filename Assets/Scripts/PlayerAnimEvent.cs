@@ -21,6 +21,7 @@ public class PlayerAnimEvent : MonoBehaviour
         player.DizzyOver();
         player.HurtOver();
         player.WinOver();
+        player.StrikeOver();
     }
 
 }

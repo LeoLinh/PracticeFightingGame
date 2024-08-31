@@ -26,6 +26,13 @@ public class PlayerController : MonoBehaviour
     private float castCooldownTimer;
     private float castCooldown;
     private bool isDashing;
+    private bool isStrike;
+    private bool isJumping;
+
+    [Header("Strike")]
+    public float strikeSpeed;
+    public float strikeDuration;
+    private float strikeTimer;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -60,6 +67,7 @@ public class PlayerController : MonoBehaviour
     public void BlockOver() { isBlocking = false; }
     public void CrouchOver() { isCrouching = false; }
     public void AttackOver() { isAttacking = false; }
+    public void StrikeOver() { isStrike = false; }
 
     private void GroundCheck()
     {
@@ -81,6 +89,8 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("isDizzy", isDizzy);
         anim.SetBool("isHurt", isHurt);
         anim.SetBool("isWin", isWin);
+        anim.SetBool("isStrike", isStrike);
+        
     }
 
     private void CheckInput()
@@ -94,8 +104,26 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B)) { isCasting = true; Cast(); }
         if (Input.GetKeyDown(KeyCode.V)) { isBlocking = true; }
         if (Input.GetKeyDown(KeyCode.C)) { isCrouching = true; }
-        if (Input.GetKeyDown(KeyCode.Mouse0)) { isAttacking = true; }
-        if (Input.GetButtonDown("Jump")) { Jump(); }
+        if (Input.GetKeyDown(KeyCode.Mouse0)) 
+        {
+            isAttacking = true; 
+        }
+        if (Input.GetButtonDown("Jump")) 
+        { 
+            Jump();
+            isGrounded = false;
+            isJumping = true;
+            
+        }
+
+        if(Input.GetKeyDown(KeyCode.Mouse1) && isGrounded == false && isJumping == true)
+        {
+            anim.SetTrigger("isJumpAttack");
+        }
+        else
+        {
+            anim.ResetTrigger("isJumpAttack");
+        }
 
         // Dash
         dashTimer -= Time.deltaTime; // dash
@@ -108,6 +136,16 @@ public class PlayerController : MonoBehaviour
         {
             isDashing = false;
         }
+        strikeTimer -= Time.deltaTime;
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            isStrike = true;
+            strikeTimer = strikeDuration;
+        }
+        else
+        {
+            isStrike = false;
+        }
     }
 
     private void Movement()
@@ -115,6 +153,10 @@ public class PlayerController : MonoBehaviour
         if (dashTimer > 0) // nếu dash timer sẽ liên tục đếm ngược và sau mỗi lần leftshift thì dashtimer sẽ = dashDuration nghĩa là sẽ lớn hơn 0.
         {
             rb.velocity = new Vector2(xInput * dashSpeed, rb.velocity.y); // Dash
+        }
+        else if (strikeTimer > 0)
+        {
+            rb.velocity = new Vector2(xInput * strikeSpeed, rb.velocity.y);
         }
         else
         {
